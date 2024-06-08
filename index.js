@@ -3,27 +3,29 @@ const morgan = require('morgan')
 const fs = require('fs');
 const PORT = 3000;
 
-const app = express();
-
 //MIDDLEWARE
-
+const app = express();
 app.use(morgan('dev'));
 
-
-//RUTA
+//RUTA HOME
 app.get("/", (req, res) =>{
     res.sendFile(__dirname + '/index.html')
 })
-app.get("/canciones", (req, res) =>{
-    res.send("Hello");
-});
 
 //OBTENER
+app.get("/canciones", (req, res) =>{
+    try {
+        const canciones = JSON.parse(fs.readFileSync('repertorio.json', 'utf8'));
+        res.status(200).json(canciones);
+    } catch (error) {
+        res.status(500).json({error: 'Error al leer el archivo'});
+    }
+});
+
+//CREAR
 app.post("/canciones", (req, res) =>{
     res.res('SOY UN POST')
 })
-
-//CREAR
 
 
 //EDITAR
@@ -32,4 +34,4 @@ app.post("/canciones", (req, res) =>{
 //BORRAR
 
 
-app.listen(PORT, console.log(`¡Servidor encendido! Http://localhost:${PORT}`));
+app.listen(PORT, console.log(`¡Servidor encendido! http://localhost:${PORT}`));
