@@ -45,18 +45,23 @@ app.put("/canciones/:id", (req,res) =>{
         const index = canciones.findIndex(cancionEditada => cancionEditada.id === id);
         canciones[index] = cancionEditada;
         fs.writeFileSync('repertorio.json', JSON.stringify(canciones));
-        res.status(200).send('Cancion Modificada con exito')
+        res.status(200).send('Cancion Modificada con exito');
     } catch (error) {
-        res.status(500).json({error: 'Error al Modificar la cancion'})
+        res.status(500).json({error: 'Error al Modificar la cancion'});
     };
 });
 
 //BORRAR
-app.delete("/canciones", (req,res) =>{
+app.delete("/canciones/:id", (req,res) =>{
     try {
-        res.json({message: 'soy un delete'})
+        const {id} = req.params;
+        const canciones = JSON.parse(fs.readFileSync('repertorio.json'));
+        const index = canciones.findIndex(c => c.id == id);
+        canciones.splice(index, 1);
+        fs.writeFileSync('repertorio.json', JSON.stringify(canciones));
+        res.status(200).send('Cancion eliminada con exito!');
     } catch (error) {
-        
+        res.status(500).json({error: 'Error al eliminar una cancion'});
     };
 });
 
