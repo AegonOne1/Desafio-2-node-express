@@ -30,7 +30,7 @@ app.post("/canciones", (req, res) =>{
         const canciones = JSON.parse(fs.readFileSync('repertorio.json', 'utf8'));
         canciones.push(nuevaCancion);
         fs.writeFileSync('repertorio.json', JSON.stringify(canciones, null, 2));
-        res.status(201).setDefaultEncoding('Cancion agregada al repertorio');
+        res.status(201).send('Cancion agregada al repertorio');
     } catch (error) {
         res.status(500).json({error: 'Error al agregar cancion al archivo'});
     };
@@ -42,11 +42,15 @@ app.put("/canciones/:id", (req,res) =>{
         const id = req.params.id;
         const cancionEditada = req.body;
         const canciones = JSON.parse(fs.readFileSync('repertorio.json'));
-        const index = canciones.findIndex(cancionEditada => cancionEditada.id === id);
+        const index = canciones.findIndex(c => c.id === id);
+        if (index === -1){
+            return res.status(400).send('Cancion no encontrada');
+        };
         canciones[index] = cancionEditada;
         fs.writeFileSync('repertorio.json', JSON.stringify(canciones));
         res.status(200).send('Cancion Modificada con exito');
     } catch (error) {
+        console.error(error);
         res.status(500).json({error: 'Error al Modificar la cancion'});
     };
 });
